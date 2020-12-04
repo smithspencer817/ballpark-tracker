@@ -11,6 +11,7 @@ const cors = require('cors');
 // import routes
 const apiRoute = require('./routes/api');
 
+
 // MIDDLEWARE
 app.use(express.json());
 app.use(bodyParser.urlencoded({

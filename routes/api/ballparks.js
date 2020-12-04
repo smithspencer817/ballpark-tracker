@@ -31,7 +31,9 @@ router.post('/', (req, res) => {
 
     const ballpark = {
         id: ballparks.length + 1,
-        name: req.body.name
+        name: req.body.name,
+        location: req.body.location,
+        homeTeam: req.body.homeTeam
     }
 
     ballparks.push(ballpark);
@@ -44,7 +46,7 @@ router.put('/:id', (req, res) => {
 
     if (!ballpark) return res.status(400).send('The ballpark with that ID was not found');
 
-    const { error } = validateballpark(req.body)
+    const { error } = validateBallpark(req.body);
 
     if (error) {
         const errorMessages = error.details.map(err => err.message)
@@ -53,6 +55,8 @@ router.put('/:id', (req, res) => {
         
     } else {
         ballpark.name = req.body.name;
+        ballpark.location = req.body.location;
+        ballpark.homeTeam = req.body.homeTeam;
         res.send(ballpark);
     }
 });

@@ -13,6 +13,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
+    // search database with knex
     const ballpark = ballparks.find(p => p.id === parseInt(req.params.id));
 
     if (!ballpark) return res.status(400).send('The ballpark with that ID was not found');

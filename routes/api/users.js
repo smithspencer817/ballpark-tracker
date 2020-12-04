@@ -1,39 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
-
-const users = [
-    {
-        id: 1,
-        username: "smithspencer817",
-        password: "password123",
-        email: "smithspencer817@mail.com",
-        firstName: "Spencer",
-        lastName: "Smith",
-        favoriteTeam: "Texas Rangers"
-    },
-    {
-        id: 2,
-        username: "debbieseitter",
-        password: "password123",
-        email: "debbieseitter@mail.com",
-        firstName: "Debbie",
-        lastName: "Seitter",
-        favoriteTeam: "Texas Rangers"
-    },
-    {
-        id: 3,
-        username: "kevinfenske",
-        password: "password123",
-        email: "kevinfenske@mail.com",
-        firstName: "Kevin",
-        lastName: "Fenske",
-        favoriteTeam: "Houston Astros"
-    }
-]
+const db = require('../../db/knex');
 
 router.get('/', (req, res) => {
-    res.send(users)
+    db.select('*').from('users').then(data => {
+        res.send(data)
+    });
 });
 
 router.get('/:id', (req, res) => {

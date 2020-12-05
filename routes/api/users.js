@@ -4,20 +4,23 @@ const Joi = require('joi');
 const db = require('../../db/knex');
 
 router.get('/', (req, res) => {
-    db.select('*').from('users').then(data => {
-        res.send(data)
+    db.select('*').from('users').then(users => {
+        res.send(users)
     });
 });
 
 router.get('/:id', (req, res) => {
-    const user = users.find(p => p.id === parseInt(req.params.id));
-
-    if (!user) return res.status(400).send('The user with that ID was not found');
-
-    res.send(user);
+    db.select('*').from('users').where({id: req.params.id}).then(user => {
+        if (user.length) {
+            res.send(user)
+        } else {
+            res.status(400).send('The user with that ID was not found');
+        }
+    });
 });
 
 router.post('/', (req, res) => {
+
     const { error } = validateUser(req.body);
 
     if (error) {

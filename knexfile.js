@@ -2,14 +2,14 @@ module.exports = {
   development: {
     client: 'pg',
     connection: {
-      port: process.env.PORT,
       host: process.env.DB_HOST,
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
     },
     migrations: {
-      directory: './db/migrations'
+      directory: './db/migrations',
+      tableName: 'migrations'
     },
     seeds: {
       directory: './db/seeds'

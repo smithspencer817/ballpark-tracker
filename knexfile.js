@@ -1,15 +1,11 @@
+require('dotenv').config();
+
 module.exports = {
   development: {
     client: 'pg',
-    connection: {
-      host: process.env.DB_HOST,
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS
-    },
+    connection: process.env.DB_URL,
     migrations: {
-      directory: './db/migrations',
-      tableName: 'migrations'
+      directory: './db/migrations'
     },
     seeds: {
       directory: './db/seeds'
@@ -19,7 +15,7 @@ module.exports = {
 
   test: {
     client: 'pg',
-    connection:'postgres://localhost/<examples_test>',
+    connection: process.env.DB_URL,
     migrations: {
       directory: './db/migrations'
     },
@@ -31,7 +27,7 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: process.env.DB_URL,
     migrations: {
       directory: './db/migrations'
     },

@@ -11,10 +11,12 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     db.select('*').from('users').where({id: req.params.id}).then(user => {
-        if (user.length) {
-            res.send(user)
+        // knex queries resolve with an array of records that were found by the query
+        // if no matching records were found, it will return an empty array
+        if (!user.length) {
+            res.status(400).send('User not found');
         } else {
-            res.status(400).send('The user with that ID was not found');
+            res.send(user);
         }
     });
 });

@@ -4,7 +4,7 @@ CREATE TABLE teams (
     id BIGSERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(50) NOT NULL,
     league VARCHAR(50) NOT NULL,
-    img BYTEA DEFAULT NULL
+    img BYTEA
 );
 
 CREATE TABLE users (
@@ -16,7 +16,7 @@ CREATE TABLE users (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
-    img BYTEA DEFAULT NULL
+    img BYTEA
 );
 
 CREATE TABLE players (
@@ -25,7 +25,7 @@ CREATE TABLE players (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     position VARCHAR(2) NOT NULL,
-    img BYTEA DEFAULT NULL
+    img BYTEA
 );
 
 CREATE TABLE ballparks (
@@ -34,7 +34,7 @@ CREATE TABLE ballparks (
     name VARCHAR(50) NOT NULL,
     city VARCHAR(50) NOT NULL,
     state VARCHAR(2) NOT NULL,
-    img BYTEA DEFAULT NULL
+    img BYTEA
 );
 
 CREATE TABLE visits (
@@ -42,9 +42,9 @@ CREATE TABLE visits (
     user_id INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
     ballpark_id INT REFERENCES ballparks (id) NOT NULL,
     away_team_id INT REFERENCES teams (id) NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    game_time TIME NOT NULL
+    start_date DATE,
+    end_date DATE,
+    game_time TIME
 );
 
 CREATE TABLE pictures (
@@ -53,7 +53,7 @@ CREATE TABLE pictures (
     visit_id INT REFERENCES visits (id) ON DELETE CASCADE NOT NULL,
     title VARCHAR(50),
     description TEXT,
-    img BYTEA DEFAULT NULL,
+    img BYTEA,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -61,5 +61,5 @@ CREATE TABLE autographs (
     id BIGSERIAL PRIMARY KEY NOT NULL,
     user_id INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
     player_id INT REFERENCES players (id) ON DELETE SET NULL,
-    img BYTEA DEFAULT NULL
+    img BYTEA
 );

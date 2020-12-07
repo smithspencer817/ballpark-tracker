@@ -25,30 +25,13 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     db.insert(req.body).into('users').returning('*')
     .then(user => res.json(user))
-    .catch(err => res.status(400).json(err))
+    .catch(err => res.json(err))
 });
 
 router.put('/:id', (req, res) => {
-    const user = users.find(p => p.id === parseInt(req.params.id));
-
-    if (!user) return res.status(400).send('The user with that ID was not found');
-
-    const { error } = validateUser(req.body);
-
-    if (error) {
-        const errorMessages = error.details.map(err => err.message)
-        res.status(400).send(errorMessages)
-        return;
-        
-    } else {
-        user.username = req.body.username
-        user.password = req.body.password
-        user.email = req.body.email
-        user.firstName = req.body.firstName
-        user.lastName = req.body.lastName
-        user.favoriteTeam = req.body.favoriteTeam
-        res.send(user);
-    }
+    db('users').where({id: req.params.id}).update(req.body).returning('*')
+    .then(user => res.json(user))
+    .catch(err => res.json(err))
 });
 
 router.delete('/:id', (req, res) => {

@@ -10,40 +10,22 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    db.select('*').from('users').where({id: req.params.id}).then(user => {
-        // knex queries resolve with an array of records that were found by the query
-        // if no matching records were found, it will return an empty array
+    db.select('*').from('users').where({id: req.params.id})
+    .then(user => {
+        // query resolves to an empty array if user not found
+        // if user found, returns an array with object of length 1
         if (!user.length) {
             res.status(400).send('User not found');
         } else {
             res.send(user);
         }
-    });
+    })
 });
 
 router.post('/', (req, res) => {
-
-    const { error } = validateUser(req.body);
-
-    if (error) {
-        const errorMessages = error.details.map(err => err.message)
-        res.status(400).send(errorMessages)
-        return;
-    }
-
-    const user = {
-        id: users.length + 1,
-        username: req.body.username,
-        password: req.body.password,
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        favoriteTeam: req.body.favoriteTeam,
-    }
-
-    users.push(user);
-
-    res.send(user);
+    db.insert(req.body).into('users').returning('*')
+    .then(user => res.json(user))
+    .catch(err => res.status(400).json(err))
 });
 
 router.put('/:id', (req, res) => {

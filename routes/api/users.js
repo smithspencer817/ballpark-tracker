@@ -4,18 +4,18 @@ const Joi = require('joi');
 const db = require('../../db/knex');
 
 router.get('/', (req, res) => {
-    db.select('*').from('users').then(users => {
+    db('users').select('*').then(users => {
         res.send(users)
     });
 });
 
 router.get('/:id', (req, res) => {
-    db.select('*').from('users').where({id: req.params.id})
+    db('users').select('*').where({id: req.params.id})
     .then(user => {
-        // query resolves to an empty array if user not found
-        // if user found, returns an array with object of length 1
         if (!user.length) {
-            res.status(400).send('User not found');
+            res.status(400).send(
+                { error: `User with id=${req.params.id} not found` }
+            );
         } else {
             res.send(user);
         }
@@ -23,36 +23,61 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    db.insert(req.body).into('users').returning('*')
+
+    // validate incoming body data
+    const { error } = validateUser(req.body);
+
+    if (error) {
+        const errorMessage = { error: error.details[0].message }
+        res.status(400).send(errorMessage)
+        return;
+    }
+
+    // if data is verified, convert to postgresql snake case syntax
+    const newUser = {
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        first_name: req.body.firstName,
+        last_name: req.body.lastName,
+        favorite_team_id: req.body.favoriteTeamId,
+        age: req.body.age
+    }
+
+    db.insert(newUser).into('users').returning('*')
     .then(user => res.json(user))
-    .catch(err => res.json(err))
+    .catch(err => res.json({ error: err.detail }))
+
 });
 
 router.put('/:id', (req, res) => {
+
+    const { error } = validateUser(req.body);
+
+    if (error) {
+        const errorMessage = { error: error.details[0].message }
+        res.status(400).send(errorMessage)
+        return;
+    }
+
     db('users').where({id: req.params.id}).update(req.body).returning('*')
     .then(user => res.json(user))
     .catch(err => res.json(err))
 });
 
 router.delete('/:id', (req, res) => {
-    const user = users.find(p => p.id === parseInt(req.params.id));
-
-    if (!user) return res.status(400).send('The user with that ID was not found');
     
-    const index = users.indexOf(user);
-    users.splice(index, 1);
-
-    res.send(user)
 });
 
 function validateUser(user) {
     const schema = Joi.object({
-        username: Joi.string().required(),
-        password: Joi.string().required(),
-        email: Joi.string().required(),
-        firstName: Joi.string().required(),
-        lastName: Joi.string().required(),
-        favoriteTeam: Joi.string().required(),
+        username: Joi.string().min(8).max(20).alphanum(),
+        password: Joi.string(),
+        email: Joi.string().email(),
+        firstName: Joi.string().min(1).max(50),
+        lastName: Joi.string().min(1).max(50),
+        favoriteTeamId: Joi.number().integer().min(1).max(30),
+        age: Joi.number().integer().min(16).max(80)
     })
     return schema.validate(user);
 }
